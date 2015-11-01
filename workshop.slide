@@ -1,0 +1,110 @@
+CodeMotion Berlin 2015
+Workshop on debugging, testing and optimizations in Go
+17:00 2 Nov 2015
+Tags: go, debugging, testing, benchmarks, optimizations, delve
+
+Florin Patan
+Senior Software Engineer, Tapglue
+florinpatan@gmail.com
+http://florinpatan.ro/
+@dlsniper
+
+
+* Who am I?
+
+My name is Florin.
+
+Writing software for ~10 years, Gopher for ~3 years.
+
+Co-organizer for Go and AWS meetups in Berlin.
+
+I'm a Senior Software Engineer at Tapglue.
+
+* Agenda
+
+- Learn how to use Delve to debug Go apps
+- Write tests / benchmarks / examples in Go
+- Understanding how Go compiler works
+- Optimize code with benchmarks and Go tools
+
+
+* Observe buggy code
+
+    go get github.com/dlsniper/codemotion
+    cd $GOPATH/src/github.com/dlsniper/codemotion/code/buggy
+
+
+* Learn how to use Delve to debug Go apps
+
+
+* Write tests for the code
+
+
+* Write benchmarks for the code
+
+
+* Understanding how Go compiler optimizes code
+
+* Function inlining
+
+Lets say we have a function called swap:
+
+    func swap(a, b int) (int, int) {
+        temp := a
+        a = b
+        b = temp
+        return a, b
+    }
+
+    func main() {
+        a := 1
+        b := 2
+        swap(a, b)
+        _, _ = a, b
+    }
+
+* Function inlining
+
+The code will be compiled as:
+
+    func main() {
+        a := 1
+        b := 2
+        temp := a
+        b = a
+        a = temp
+        _, _ = a, b
+    }
+
+* Bound checking
+
+Bound checking is a method by which the compiler ensures that we are always accessing
+allowed indexes within a slice/array and it's part of what keeps the Go to be a memory
+language (aka you can't randomly poke at addresses from outside the slice/array)
+
+Example:
+
+    func main() {
+        a := []int{1,2,3,4}
+        for i:=0; i < len(a); i++ {
+            _ = a[i]
+        }
+    }
+
+    func main() {
+        a := []int{1,2,3,4}
+        for i := range a {
+            _ = a[i]
+        }
+    }
+
+* Bound checking
+
+Bound checking can be disabled with -gcflags "-B" but use it AT YOUR OWN RISK!
+
+* Optimize code
+
+- Check out what the optimizer does with -gcflags "-m" (inlining / escaping to heap)
+- Check out what the assembler looks like with -gcflags "-S"
+- If you are REALLY REALLY sure, -gcflags "-B" (AT YOUR OWN RISK!)
+
