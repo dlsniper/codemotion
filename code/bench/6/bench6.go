@@ -4,16 +4,19 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"sync/atomic"
 )
 
 var visitorID uint64
 
 func visitorCounter() uint64 {
-	visitorID++
+	atomic.AddUint64(&visitorID, 1)
 	return visitorID
 }
 
 func Hello(w http.ResponseWriter, r *http.Request) {
+	log.Printf("got request for path: %s", r.RequestURI)
+
 	response := `<!doctype html>
 <html lang="en">
     <head>
@@ -32,6 +35,7 @@ func Hello(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(500)
 		return
 	}
+	visitorCounter()
 	err = t.Execute(w, struct{ Number uint64 }{visitorID})
 	if err != nil {
 		log.Printf("got error: %q", err)
