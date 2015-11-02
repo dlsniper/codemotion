@@ -1,6 +1,7 @@
 package bench6_test
 
 import (
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -24,6 +25,17 @@ func generateSimpleRequests(b *testing.B) ([]*httptest.ResponseRecorder, []*http
 	}
 
 	return responses, requests
+}
+
+func ExampleOwnMux() {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", bench6.Hello)
+	log.Fatalf("%q", http.ListenAndServe(":8000", mux))
+}
+
+func ExampleMux() {
+	mux := bench6.Mux()
+	log.Fatalf("%q", http.ListenAndServe(":8000", mux))
 }
 
 func BenchmarkHandler(b *testing.B) {
